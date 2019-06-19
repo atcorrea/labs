@@ -8,16 +8,32 @@
 </head>
 
 <body>
+
+    <button id="Mensagem" class="btn btn-primary" type="button">Mensagem</button>
+    <button id="file" class="btn btn-secondary" type="button">File</button>
+
     <script>
         const { ipcRenderer } = require('electron');
+        const $ = require('jquery');
 
-        console.log(ipcRenderer.sendSync('synchronous-message', {a: 1, b: 2}));
+        $("#Mensagem").on('click', () => {
+            ipcRenderer.send('showMessage');
 
-        ipcRenderer.on('asynchronous-reply', (event, arg) => {
-            console.log('reply ' + arg);
-        })
+            ipcRenderer.on('message-response', (event, data) => {
+                document.write(data);
+            })
+        });
 
-        ipcRenderer.send('asynchronous-message', 'async ping');
+        $("#file").on('click', () => {
+            ipcRenderer.send('openFile', () => {
+                console.log('event sent');
+            });
+
+            ipcRenderer.on('fileData', (event, data) => {
+                document.write(data);
+            });
+        });
     </script>
 </body>
+
 </html>
